@@ -1,0 +1,137 @@
+.complaint-detail {
+  padding: 24px;
+}
+
+.section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.section h2 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+
+.kv {
+  display: flex;
+  gap: 8px;
+}
+
+.kv .k {
+  color: #777;
+  min-width: 160px;
+}
+
+.evidences {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.evidences img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.order-items {
+  margin-top: 8px;
+  display: grid;
+  gap: 12px;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7f8fa;
+  border-radius: 8px;
+  padding: 16px 20px;
+  border: 1px solid #eee;
+}
+
+.order-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.order-item-title {
+  font-weight: 600;
+}
+
+.order-item-qty {
+  color: #6b7280;
+}
+
+.order-item-total {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.actions form {
+  display: block;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.action-button {
+  padding: 8px 12px;
+  border: 1px solid #dcdcdc;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.action-button.active {
+  border-color: #1677ff;
+  background: #e6f4ff;
+  color: #1677ff;
+}
+
+.actions .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.submit-row {
+  margin-top: 12px;
+}
+
+.actions input, .actions select, .actions textarea {
+  padding: 8px 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+}
+
+.actions button {
+  padding: 8px 12px;
+  border: 1px solid #1677ff;
+  background: #1677ff;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.hint {
+  color: #777;
+  font-size: 12px;
+}
+
+

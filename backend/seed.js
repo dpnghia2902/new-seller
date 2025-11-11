@@ -6,6 +6,7 @@ const Shop = require('./models/Shop');
 const Product = require('./models/Product');
 const Order = require('./models/Order');
 const Coupon = require('./models/Coupon');
+const Complaint = require('./models/Complaint');
 
 // Helper function to set isActive based on stock
 const setProductActiveStatus = (product) => {
@@ -33,6 +34,7 @@ const seedData = async () => {
     await Product.deleteMany({});
     await Order.deleteMany({});
     await Coupon.deleteMany({});
+    await Complaint.deleteMany({});
     console.log('🗑️  Cleared existing data');
 
     // Create Users
@@ -286,7 +288,7 @@ const seedData = async () => {
     console.log('✅ Created 4 coupons');
 
     // Create Orders
-    await Order.create([
+    const createdOrders = await Order.create([
       {
         buyer: users[0]._id,
         shop: shops[0]._id,
@@ -403,6 +405,85 @@ const seedData = async () => {
       },
     ]);
     console.log('✅ Created 4 orders');
+
+    // Prepare readable order codes for search/filter in complaints
+    const orderCodes = ['ORD-0001', 'ORD-0002', 'ORD-0003', 'ORD-0004'];
+
+    // Create Complaints for seller management
+    const complaints = await Complaint.create([
+      {
+        shop: shops[0]._id,
+        order: createdOrders[0]._id,
+        product: createdOrders[0].items[0].product,
+        buyer: users[0]._id,
+        orderCode: orderCodes[0],
+        type: 'damaged_product',
+        title: 'Tai nghe bị trầy xước và méo khung',
+        description: 'Hộp còn nguyên nhưng tai nghe có vết trầy, khung tai trái bị méo.',
+        status: 'new',
+        evidenceImages: [
+          'https://images.unsplash.com/photo-1518441982125-5d4f84f86b35?q=80&w=600',
+          'https://images.unsplash.com/photo-1518441766313-7e7d43b2f3b5?q=80&w=600',
+        ],
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // 7 ngày trước
+      },
+      {
+        shop: shops[0]._id,
+        order: createdOrders[1]._id,
+        product: createdOrders[1].items[0].product,
+        buyer: users[0]._id,
+        orderCode: orderCodes[1],
+        type: 'wrong_item',
+        title: 'Nhận sai mẫu iPhone',
+        description: 'Đặt iPhone 14 Pro Max nhưng nhận bản màu khác và dung lượng thấp hơn.',
+        status: 'in_progress',
+        evidenceImages: [
+          'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600',
+        ],
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 ngày trước
+      },
+      {
+        shop: shops[1]._id,
+        order: createdOrders[2]._id,
+        product: createdOrders[2].items[1].product,
+        buyer: users[0]._id,
+        orderCode: orderCodes[2],
+        type: 'missing_item',
+        title: 'Thiếu 1 chiếc quần trong đơn',
+        description: 'Đơn có 2 áo + 1 quần, nhưng chỉ nhận được 2 áo.',
+        status: 'new',
+        evidenceImages: [
+          'https://images.unsplash.com/photo-1520975922284-8b456906c813?q=80&w=600',
+        ],
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14), // 14 ngày trước
+      },
+      {
+        shop: shops[0]._id,
+        order: createdOrders[3]._id,
+        product: createdOrders[3].items[0].product,
+        buyer: users[0]._id,
+        orderCode: orderCodes[3],
+        type: 'late_delivery',
+        title: 'Giao hàng trễ 5 ngày',
+        description: 'Đơn dự kiến giao trong 2 ngày nhưng thực tế 7 ngày mới nhận được.',
+        status: 'disputed',
+        evidenceImages: [
+          'https://images.unsplash.com/photo-1544198365-f5d60b6d8190?q=80&w=600',
+        ],
+        sellerEvidence: [
+          'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600', // ảnh minh chứng của seller
+          'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4', // video minh chứng mẫu
+        ],
+        resolution: {
+          action: 'reject',
+          note: 'Đã cung cấp video chứng minh giao đúng hẹn theo SLA carrier',
+          decidedAt: new Date(Date.now() - 1000 * 60 * 60 * 12),
+          decidedBy: users[1]._id,
+        },
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1), // 1 ngày trước
+      },
+    ]);
+    console.log(`✅ Created ${complaints.length} complaints`);
     
     // Update coupon usage count
     await Coupon.findByIdAndUpdate(coupons[0]._id, { $inc: { usedCount: 1 } });
@@ -416,6 +497,7 @@ const seedData = async () => {
     console.log('   - Products: 9');
     console.log('   - Coupons: 4');
     console.log('   - Orders: 4 (3 with coupons)');
+    console.log(`   - Complaints: ${complaints.length}`);
     console.log('\n🎫 Sample Coupons:');
     console.log('   - WELCOME10: 10% off (Electronics Paradise)');
     console.log('   - SAVE50: $50 off electronics (Electronics Paradise)');
