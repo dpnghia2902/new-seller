@@ -37,6 +37,7 @@ try {
   app.use('/api/orders', require('./routes/orderRoutes'));
   app.use('/api/coupons', require('./routes/couponRoutes'));
   app.use('/api/admin', require('./routes/adminRoutes'));
+  app.use('/api/complaints', require('./routes/complaintRoutes'));
   app.use('/api/verification', require('./routes/verificationRoutes'));
   app.use('/api/shipping', require('./routes/shippingRoutes'));
   app.use('/api/error-logs', require('./routes/errorLogRoutes'));
@@ -46,6 +47,16 @@ try {
   process.exit(1);
 }
 
+// Static serve uploads
+const path = require('path');
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadsPath = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Basic route
 app.get('/api', (req, res) => {
   res.json({ message: 'eBay Clone API' });
