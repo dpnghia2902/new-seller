@@ -27,6 +27,34 @@
   flex: 1;
 }
 
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-shipping {
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-shipping:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.btn-shipping:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btn-invoice {
   padding: 0.6rem 1.2rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -714,5 +742,185 @@
   
   .invoice-summary .invoice-total {
     font-size: 1.1rem;
+  }
+}
+
+/* Shipping Label Modal Styles */
+.shipping-label-modal {
+  max-width: 900px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.shipping-label-content {
+  padding: 20px;
+}
+
+.label-section {
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.label-section h3 {
+  margin: 0 0 15px;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.tracking-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+  border: none;
+}
+
+.tracking-section h3 {
+  color: white;
+  border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.tracking-number {
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  margin: 15px 0;
+  font-family: 'Courier New', monospace;
+}
+
+.order-number {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.label-addresses {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.address-box {
+  background: white;
+  border: 2px solid #e5e7eb;
+}
+
+.address-box h3 {
+  background: #f3f4f6;
+  margin: -15px -15px 15px;
+  padding: 10px 15px;
+  border-bottom: 2px solid #d1d5db;
+}
+
+.address-box p {
+  margin: 5px 0;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.label-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  margin-top: 10px;
+}
+
+.label-items-table th,
+.label-items-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #e5e7eb;
+}
+
+.label-items-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+  color: #374151;
+}
+
+.label-items-table tfoot .total-row {
+  background: #f9fafb;
+  font-weight: bold;
+}
+
+.label-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.btn-print-label {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-print-label:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.btn-cancel {
+  padding: 12px 24px;
+  background: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #4b5563;
+}
+
+@media (max-width: 768px) {
+  .shipping-label-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .label-addresses {
+    grid-template-columns: 1fr;
+  }
+
+  .tracking-number {
+    font-size: 24px;
+  }
+
+  .label-actions {
+    flex-direction: column;
+  }
+
+  .btn-print-label,
+  .btn-cancel {
+    width: 100%;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-shipping,
+  .btn-invoice {
+    width: 100%;
   }
 }

@@ -61,6 +61,12 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const refreshUser = async () => {
+    if (token) {
+      await fetchUser();
+    }
+  };
+
   const value = {
     user,
     token,
@@ -68,8 +74,11 @@ export const AuthProvider = ({ children }) => {
     register,
     login,
     logout,
+    refreshUser,
     isAuthenticated: !!token,
     isUserSeller: !!user?.storeId,
+    isVerified: user?.isVerified || false,
+    isAdmin: user?.role === 'admin',
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const menuItems = [
     { path: '/dashboard', icon: '📊', label: 'Dashboard' },
@@ -13,6 +15,7 @@ const Sidebar = () => {
     { path: '/inventory', icon: '📋', label: 'Inventory' },
     { path: '/coupons', icon: '🎫', label: 'Coupons' },
     { path: '/complaints', icon: '📝', label: 'Complaints' },
+    { path: '/verification', icon: '✅', label: 'Verification' },
     { path: '/profile', icon: '👤', label: 'Profile' },
   ];
 
@@ -39,6 +42,17 @@ const Sidebar = () => {
             <span className="menu-label">{item.label}</span>
           </Link>
         ))}
+        
+        {/* Admin-only menu */}
+        {user?.role === 'admin' && (
+          <Link
+            to="/error-logs"
+            className={`menu-item admin-only ${isActive('/error-logs') ? 'active' : ''}`}
+          >
+            <span className="menu-icon">🔍</span>
+            <span className="menu-label">Error Logs</span>
+          </Link>
+        )}
       </nav>
 
       <div className="sidebar-footer">

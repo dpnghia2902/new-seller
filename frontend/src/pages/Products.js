@@ -29,7 +29,7 @@ const Products = () => {
   });
 
   const navigate = useNavigate();
-  const { user, isUserSeller } = useAuth();
+  const { user, isUserSeller, isVerified, refreshUser } = useAuth();
 
   useEffect(() => {
     if (!user) {
@@ -232,6 +232,40 @@ const Products = () => {
         <div className="products-header">
           <h1>Seller management</h1>
         </div>
+
+        {!isVerified && (
+          <div className="warning-banner" style={{
+            backgroundColor: '#fff3cd',
+            border: '1px solid #ffc107',
+            padding: '15px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <span>⚠️ Your seller account is pending verification. You cannot add or edit products until an admin approves your account.</span>
+            <button 
+              onClick={async () => {
+                setLoading(true);
+                await refreshUser();
+                setLoading(false);
+              }} 
+              style={{
+                marginLeft: '10px',
+                padding: '8px 16px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              🔄 Refresh Status
+            </button>
+          </div>
+        )}
 
         {error && (
           <div className="error-message">

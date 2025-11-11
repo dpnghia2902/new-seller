@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { orderAPI } from '../api/client';
+import { orderAPI, shippingAPI } from '../api/client';
 import AdminLayout from '../components/AdminLayout';
 import './OrderDetail.css';
 
@@ -11,6 +11,9 @@ const OrderDetail = () => {
   const [error, setError] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
+  const [showShippingLabel, setShowShippingLabel] = useState(false);
+  const [shippingLabel, setShippingLabel] = useState(null);
+  const [loadingLabel, setLoadingLabel] = useState(false);
 
   const { orderId } = useParams();
   const navigate = useNavigate();
@@ -53,6 +56,25 @@ const OrderDetail = () => {
     } finally {
       setUpdatingStatus(false);
     }
+  };
+
+  const handlePrintShippingLabel = async () => {
+    try {
+      setLoadingLabel(true);
+      const response = await shippingAPI.getShippingLabel(orderId);
+      setShippingLabel(response.data.label);
+      setShowShippingLabel(true);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load shipping label');
+    } finally {
+      setLoadingLabel(false);
+    }
+  };
+
+  const handlePrintLabel = () => {
+    const token = localStorage.getItem('token');
+    const printUrl = shippingAPI.printShippingLabel(orderId);
+    window.open(`${printUrl}?token=${token}`, '_blank');
   };
 
   const getEstimatedDeliveryDate = (order) => {
@@ -139,9 +161,18 @@ const OrderDetail = () => {
             ← Back to Orders
           </button>
           <h1>Order Details</h1>
-          <button onClick={() => setShowInvoice(true)} className="btn-invoice">
-            📄 View Invoice
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={() => setShowInvoice(true)} className="btn-invoice">
+              📄 View Invoice
+            </button>
+            <button 
+              onClick={handlePrintShippingLabel} 
+              className="btn-invoice"
+              disabled={loadingLabel}
+            >
+              {loadingLabel ? '⏳ Loading...' : '📦 Shipping Label'}
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -410,6 +441,89 @@ const OrderDetail = () => {
                   <p>Thank you for your order!</p>
                   <button className="btn-print" onClick={() => window.print()}>
                     🖨️ Print Invoice
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Shipping Label Modal */}
+        {showShippingLabel && shippingLabel && (
+          <div className="invoice-modal-overlay" onClick={() => setShowShippingLabel(false)}>
+            <div className="invoice-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '800px' }}>
+              <div className="modal-header">
+                <h2>📦 Shipping Label</h2>
+                <button onClick={() => setShowShippingLabel(false)} className="close-modal-btn">
+                  ✕
+                </button>
+              </div>
+              <div className="shipping-label-content" style={{ padding: '20px' }}>
+                <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+                  <h3 style={{ marginTop: 0 }}>Tracking Number</h3>
+                  <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#007bff', margin: '10px 0' }}>
+                    {shippingLabel.trackingNumber}
+                  </p>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                  <div style={{ padding: '15px', border: '2px solid #007bff', borderRadius: '8px' }}>
+                    <h4 style={{ marginTop: 0, color: '#007bff' }}>📤 From (Seller)</h4>
+                    <p style={{ margin: '5px 0' }}><strong>{shippingLabel?.shop?.name || 'N/A'}</strong></p>
+                    <p style={{ margin: '5px 0', fontSize: '14px' }}>{shippingLabel?.shop?.address || 'N/A'}</p>
+                    <p style={{ margin: '5px 0', fontSize: '14px' }}>{shippingLabel?.shop?.phone || 'N/A'}</p>
+                  </div>
+
+                  <div style={{ padding: '15px', border: '2px solid #28a745', borderRadius: '8px' }}>
+                    <h4 style={{ marginTop: 0, color: '#28a745' }}>📥 To (Buyer)</h4>
+                    <p style={{ margin: '5px 0' }}><strong>{shippingLabel?.buyer?.name || 'N/A'}</strong></p>
+                    <p style={{ margin: '5px 0', fontSize: '14px' }}>
+                      {shippingLabel?.buyer?.street || 'N/A'}, {shippingLabel?.buyer?.city || 'N/A'}
+                    </p>
+                    <p style={{ margin: '5px 0', fontSize: '14px' }}>
+                      {shippingLabel?.buyer?.state || 'N/A'} {shippingLabel?.buyer?.zipCode || 'N/A'}
+                    </p>
+                    <p style={{ margin: '5px 0', fontSize: '14px' }}>{shippingLabel?.buyer?.phone || 'N/A'}</p>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '20px' }}>
+                  <h4>📦 Items</h4>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#f8f9fa' }}>
+                        <th style={{ padding: '10px', textAlign: 'left', border: '1px solid #dee2e6' }}>Product</th>
+                        <th style={{ padding: '10px', textAlign: 'center', border: '1px solid #dee2e6' }}>Quantity</th>
+                        <th style={{ padding: '10px', textAlign: 'right', border: '1px solid #dee2e6' }}>Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {shippingLabel?.items?.map((item, index) => (
+                        <tr key={index}>
+                          <td style={{ padding: '10px', border: '1px solid #dee2e6' }}>{item.name}</td>
+                          <td style={{ padding: '10px', textAlign: 'center', border: '1px solid #dee2e6' }}>{item.quantity}</td>
+                          <td style={{ padding: '10px', textAlign: 'right', border: '1px solid #dee2e6' }}>${item.price?.toFixed(2) || '0.00'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div style={{ textAlign: 'center', paddingTop: '20px', borderTop: '2px dashed #ccc' }}>
+                  <button 
+                    onClick={handlePrintLabel} 
+                    className="btn-print"
+                    style={{
+                      padding: '12px 30px',
+                      fontSize: '16px',
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🖨️ Print Label
                   </button>
                 </div>
               </div>
