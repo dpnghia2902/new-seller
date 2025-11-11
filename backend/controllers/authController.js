@@ -83,7 +83,11 @@ exports.login = async (req, res) => {
         username: user.username,
         email: user.email,
         fullName: user.fullName,
+        role: user.role,
         storeId: user.storeId,
+        isVerified: user.isVerified,
+        verificationStatus: user.verificationStatus,
+        verifiedAt: user.verifiedAt,
       },
     });
   } catch (error) {
@@ -103,8 +107,12 @@ exports.getMe = async (req, res) => {
         username: user.username,
         email: user.email,
         fullName: user.fullName,
+        role: user.role,
         storeId: user.storeId,
         avatar: user.avatar,
+        isVerified: user.isVerified,
+        verificationStatus: user.verificationStatus,
+        verifiedAt: user.verifiedAt,
       },
     });
   } catch (error) {

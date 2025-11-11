@@ -9,7 +9,10 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 
 // Connect to database
-connectDB();
+connectDB().catch(err => {
+  console.error('Database connection failed:', err);
+  process.exit(1);
+});
 
 const app = express();
 
@@ -27,12 +30,21 @@ app.use(requestLogger);
 app.use('/api/', apiLimiter);
 
 // Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/shops', require('./routes/shopRoutes'));
-app.use('/api/products', require('./routes/productRoutes'));
-app.use('/api/orders', require('./routes/orderRoutes'));
-app.use('/api/coupons', require('./routes/couponRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
+try {
+  app.use('/api/auth', require('./routes/authRoutes'));
+  app.use('/api/shops', require('./routes/shopRoutes'));
+  app.use('/api/products', require('./routes/productRoutes'));
+  app.use('/api/orders', require('./routes/orderRoutes'));
+  app.use('/api/coupons', require('./routes/couponRoutes'));
+  app.use('/api/admin', require('./routes/adminRoutes'));
+  app.use('/api/verification', require('./routes/verificationRoutes'));
+  app.use('/api/shipping', require('./routes/shippingRoutes'));
+  app.use('/api/error-logs', require('./routes/errorLogRoutes'));
+} catch (error) {
+  console.error('Error loading routes:', error);
+  console.error('Stack:', error.stack);
+  process.exit(1);
+}
 
 // Basic route
 app.get('/api', (req, res) => {

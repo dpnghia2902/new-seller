@@ -46,6 +46,17 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    verificationStatus: {
+      type: String,
+      enum: ['unverified', 'pending', 'verified', 'rejected'],
+      default: 'unverified',
+    },
+    verificationSubmittedAt: {
+      type: Date,
+    },
+    verifiedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
