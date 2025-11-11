@@ -16,6 +16,8 @@ import OrderDetail from './pages/OrderDetail';
 import Products from './pages/Products';
 import Inventory from './pages/Inventory';
 import Coupons from './pages/Coupons';
+import Complaints from './pages/Complaints';
+import ComplaintDetail from './pages/ComplaintDetail';
 import Profile from './pages/Profile';
 import ShopDetail from './pages/ShopDetail';
 import ProductDetail from './pages/ProductDetail';
@@ -39,6 +41,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <BecomeSeller />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/complaints/:complaintId"
+                  element={
+                    <ProtectedRoute>
+                      <ComplaintDetail />
                     </ProtectedRoute>
                   }
                 />
@@ -87,6 +97,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Coupons />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/complaints"
+                  element={
+                    <ProtectedRoute>
+                      <Complaints />
                     </ProtectedRoute>
                   }
                 />

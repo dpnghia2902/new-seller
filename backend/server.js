@@ -19,7 +19,18 @@ app.use('/api/shops', require('./routes/shopRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
+app.use('/api/complaints', require('./routes/complaintRoutes'));
 
+// Static serve uploads
+const path = require('path');
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadsPath = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Basic route
 app.get('/api', (req, res) => {
   res.json({ message: 'eBay Clone API' });
