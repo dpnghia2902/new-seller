@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Review = require('../models/Review');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
@@ -104,7 +105,7 @@ exports.getProductReviews = async (req, res) => {
 
         // Calculate rating distribution
         const ratingStats = await Review.aggregate([
-            { $match: { product: mongoose.Types.ObjectId(productId) } },
+            { $match: { product: new mongoose.Types.ObjectId(productId) } },
             {
                 $group: {
                     _id: '$rating',
@@ -120,7 +121,7 @@ exports.getProductReviews = async (req, res) => {
 
         // Calculate average rating
         const avgRating = await Review.aggregate([
-            { $match: { product: mongoose.Types.ObjectId(productId) } },
+            { $match: { product: new mongoose.Types.ObjectId(productId) } },
             {
                 $group: {
                     _id: null,

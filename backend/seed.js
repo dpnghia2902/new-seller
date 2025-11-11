@@ -6,7 +6,7 @@ const Shop = require('./models/Shop');
 const Product = require('./models/Product');
 const Order = require('./models/Order');
 const Coupon = require('./models/Coupon');
-const Review = require('./models/Review'); // ✅ THÊM: model Review
+const Review = require('./models/Review'); 
 const Complaint = require('./models/Complaint');
 
 // Helper function to set isActive based on stock
