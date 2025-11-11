@@ -82,4 +82,18 @@ export const reviewAPI = {
   voteReview: (reviewId) => api.post(`/reviews/${reviewId}/vote`),
 };
 
+// Complaints API
+export const complaintsAPI = {
+  list: (params) => api.get('/complaints', { params }),
+  get: (id) => api.get(`/complaints/${id}`),
+  action: (id, data) => api.patch(`/complaints/${id}/action`, data),
+  uploadEvidence: (id, files) => {
+    const form = new FormData();
+    [...files].forEach((f) => form.append('files', f));
+    return api.post(`/complaints/${id}/evidence`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+};
+
 export default api;

@@ -7,10 +7,11 @@ const {
   getAllShops,
 } = require('../controllers/shopController');
 const { protect } = require('../middleware/auth');
+const { shopCreateLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
-router.post('/create', protect, createShop);
+router.post('/create', protect, shopCreateLimiter, createShop);
 router.get('/my-shop', protect, getMyShop);
 router.get('/all', getAllShops);
 router.get('/:shopId', getShop);
