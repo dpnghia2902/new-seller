@@ -24,6 +24,8 @@ import Profile from './pages/Profile';
 import ShopDetail from './pages/ShopDetail';
 import ProductDetail from './pages/ProductDetail';
 import Reviews from './pages/Reviews';
+import Verification from './pages/Verification';
+import ErrorLogs from './pages/ErrorLogs';
 
 function App() {
     return (
@@ -123,6 +125,22 @@ function App() {
                                         element={
                                             <ProtectedRoute>
                                                 <Reviews />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="/verification"
+                                        element={
+                                            <ProtectedRoute>
+                                                <Verification />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="/error-logs"
+                                        element={
+                                            <ProtectedRoute>
+                                                <ErrorLogs />
                                             </ProtectedRoute>
                                         }
                                     />

@@ -96,4 +96,31 @@ export const complaintsAPI = {
   },
 };
 
+// Verification API
+export const verificationAPI = {
+  submitVerification: (data) => api.post('/verification/submit', data),
+  getMyVerification: () => api.get('/verification/my-verification'),
+  getAllVerifications: (params) => api.get('/verification', { params }),
+  getVerificationById: (id) => api.get(`/verification/${id}`),
+  approveVerification: (id, data) => api.put(`/verification/${id}/approve`, data),
+  rejectVerification: (id, data) => api.put(`/verification/${id}/reject`, data),
+  deleteVerification: (id) => api.delete(`/verification/${id}`),
+};
+
+// Shipping API
+export const shippingAPI = {
+  getShippingLabel: (orderId) => api.get(`/shipping/label/${orderId}`),
+  printShippingLabel: (orderId) => `${API_BASE_URL}/shipping/label/${orderId}/print`,
+};
+
+// Error Logs API (Admin)
+export const errorLogAPI = {
+  getErrorLogs: (params) => api.get('/error-logs', { params }),
+  getErrorLog: (id) => api.get(`/error-logs/${id}`),
+  resolveErrorLog: (id, data) => api.put(`/error-logs/${id}/resolve`, data),
+  deleteErrorLogs: (ids) => api.delete('/error-logs/bulk', { data: { ids } }),
+  getStatsByContext: (params) => api.get('/error-logs/stats/context', { params }),
+  getTimeline: (params) => api.get('/error-logs/stats/timeline', { params }),
+};
+
 export default api;

@@ -70,7 +70,7 @@ const orderCreateLimiter = rateLimit({
 // General API rate limiter - 100 requests per 15 minutes
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100000,
+  max: 1000,
   message: {
     message: 'Too many requests from this IP. Please try again after 15 minutes.',
     code: 'RATE_LIMIT_EXCEEDED',
@@ -89,7 +89,7 @@ const apiLimiter = rateLimit({
 // Auth rate limiter - 5 attempts per 15 minutes
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 1000,
   message: {
     message: 'Too many authentication attempts. Please try again after 15 minutes.',
     code: 'RATE_LIMIT_EXCEEDED',

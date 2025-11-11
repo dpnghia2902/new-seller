@@ -34,6 +34,14 @@ exports.getShippingLabel = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to generate label for this order' });
     }
 
+    // Debug: Log order data
+    console.log('Order data:', {
+      shippingAddress: order.shippingAddress,
+      buyer: order.buyer,
+      shop: order.shop,
+      items: order.items
+    });
+
     // Generate tracking number if not exists
     let trackingNumber = order.trackingNumber;
     if (!trackingNumber) {
@@ -48,36 +56,39 @@ exports.getShippingLabel = async (req, res) => {
       orderNumber: order._id.toString().substring(0, 8).toUpperCase(),
       orderDate: order.createdAt,
       
-      // Seller info
-      from: {
-        shopName: order.shop.shopName,
-        address: order.shop.location || 'Shop Address Not Provided',
+      // Shop info (seller)
+      shop: {
+        name: order.shop?.shopName || 'Shop Name Not Available',
+        address: order.shop?.location || 'Shop Address Not Provided',
+        phone: order.shop?.phone || 'Contact Shop',
       },
       
       // Buyer info
-      to: {
-        name: order.buyer.fullName || order.buyer.username,
-        email: order.buyer.email,
-        phone: order.buyer.phone || 'N/A',
-        address: order.shippingAddress ? 
-          `${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zipCode}, ${order.shippingAddress.country}` :
-          'Address Not Provided',
+      buyer: {
+        name: order.buyer?.fullName || order.buyer?.username || 'Buyer Name',
+        email: order.buyer?.email || 'No Email',
+        phone: order.buyer?.phone || order.shippingAddress?.phone || 'No Phone',
+        street: order.shippingAddress?.street || 'Street Not Provided',
+        city: order.shippingAddress?.city || 'City Not Provided',
+        state: order.shippingAddress?.state || '',
+        zipCode: order.shippingAddress?.zipCode || '',
+        country: order.shippingAddress?.country || 'Country Not Provided',
       },
       
       // Items
-      items: order.items.map(item => ({
-        title: item.title,
-        quantity: item.quantity,
-        price: item.price,
-      })),
+      items: order.items?.map(item => ({
+        name: item.title || item.product?.title || 'Product',
+        quantity: item.quantity || 1,
+        price: item.price || 0,
+      })) || [],
       
       // Totals
-      totalPrice: order.totalPrice,
+      totalPrice: order.totalPrice || 0,
       discount: order.discount || 0,
-      originalPrice: order.originalPrice || order.totalPrice,
+      originalPrice: order.originalPrice || order.totalPrice || 0,
       
       // Status
-      status: order.status,
+      status: order.status || 'pending',
       
       // Barcode data (tracking number encoded)
       barcodeData: trackingNumber,
