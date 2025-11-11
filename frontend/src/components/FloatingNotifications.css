@@ -1,0 +1,18 @@
+/* Khung cố định ở góc trên phải */
+.floating-notification-anchor {
+    position: fixed;
+    top: 12px;
+    right: 16px;
+    z-index: 1000; /* cao hơn layout khác */
+}
+
+/* Bạn có thể tinh chỉnh kích thước nút chuông ở đây nếu muốn */
+.floating-notification-anchor .notification-bell {
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Đảm bảo panel của NotificationDropdown căn theo nút chuông */
+.floating-notification-anchor .notification-dropdown {
+    position: relative; /* để panel absolute bám theo */
+}

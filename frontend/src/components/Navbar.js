@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
+import NotificationDropdown from './NotificationDropdown';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -14,6 +15,7 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
+
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">
           <span className="logo-icon">📦</span> eBay Clone

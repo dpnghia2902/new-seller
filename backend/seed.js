@@ -6,6 +6,7 @@ const Shop = require('./models/Shop');
 const Product = require('./models/Product');
 const Order = require('./models/Order');
 const Coupon = require('./models/Coupon');
+const Review = require('./models/Review'); // ✅ THÊM: model Review
 
 // Helper function to set isActive based on stock
 const setProductActiveStatus = (product) => {
@@ -33,6 +34,8 @@ const seedData = async () => {
     await Product.deleteMany({});
     await Order.deleteMany({});
     await Coupon.deleteMany({});
+    await Review.deleteMany({}); // ✅ THÊM: clear Review
+
     console.log('🗑️  Cleared existing data');
 
     // Create Users
@@ -286,7 +289,7 @@ const seedData = async () => {
     console.log('✅ Created 4 coupons');
 
     // Create Orders
-    await Order.create([
+    const orders = await Order.create([
       {
         buyer: users[0]._id,
         shop: shops[0]._id,
@@ -408,7 +411,85 @@ const seedData = async () => {
     await Coupon.findByIdAndUpdate(coupons[0]._id, { $inc: { usedCount: 1 } });
     await Coupon.findByIdAndUpdate(coupons[1]._id, { $inc: { usedCount: 1 } });
     await Coupon.findByIdAndUpdate(coupons[2]._id, { $inc: { usedCount: 1 } });
-    
+    // ✅ THÊM: Create Reviews (gắn chính xác product/order/buyer/shop)
+    const reviewsData = [
+      {
+        product: products1[0]._id, // Sony WH-1000XM4
+        order: orders[0]._id,
+        buyer: users[0]._id,       // buyer1
+        shop: shops[0]._id,        // Electronics
+        rating: 5,
+        comment: 'Tai nghe tuyệt vời, âm thanh rõ ràng và chống ồn cực tốt. Đeo cả ngày vẫn thoải mái!',
+        images: ['https://cdn.example.com/reviews/sony-wh1000xm4-review1.jpg'],
+        sellerResponse: {
+          comment: 'Cảm ơn bạn đã tin tưởng và ủng hộ shop nhé! ❤️',
+          respondedAt: new Date('2025-03-02T10:12:00Z')
+        },
+        isVerifiedPurchase: true,
+        helpfulVotes: 8,
+        votedBy: []
+      },
+      {
+        product: products1[1]._id, // iPhone 14 Pro Max
+        order: orders[1]._id,
+        buyer: users[0]._id,
+        shop: shops[0]._id,
+        rating: 4,
+        comment: 'Hàng chính hãng, đóng gói cẩn thận. Tuy nhiên giao hàng chậm hơn dự kiến 1 ngày.',
+        images: ['https://cdn.example.com/reviews/iphone14-review.jpg'],
+        sellerResponse: {
+          comment: 'Xin lỗi vì sự chậm trễ, chúng tôi sẽ cải thiện vận chuyển! Cảm ơn bạn đã thông cảm.',
+          respondedAt: new Date('2025-03-03T08:30:00Z')
+        },
+        isVerifiedPurchase: true,
+        helpfulVotes: 5,
+        votedBy: []
+      },
+      {
+        product: products2[0]._id, // T-Shirt
+        order: orders[2]._id,
+        buyer: users[0]._id,
+        shop: shops[1]._id,        // Fashion
+        rating: 5,
+        comment: 'Áo rất mềm, mặc cực kỳ dễ chịu. Form vừa và vải không bị co sau khi giặt.',
+        images: ['https://cdn.example.com/reviews/tshirt-review.jpg'],
+        sellerResponse: {
+          comment: 'Rất vui vì bạn hài lòng với sản phẩm của Fashion World 💕',
+          respondedAt: new Date('2025-03-05T14:05:00Z')
+        },
+        isVerifiedPurchase: true,
+        helpfulVotes: 12,
+        votedBy: []
+      },
+      {
+        product: products2[2]._id, // Sunglasses
+        order: orders[2]._id,
+        buyer: users[0]._id,
+        shop: shops[1]._id,
+        rating: 4,
+        comment: 'Kính đẹp, chất lượng ổn nhưng hộp đựng hơi đơn giản.',
+        images: ['https://cdn.example.com/reviews/sunglasses-review.jpg'],
+        isVerifiedPurchase: true,
+        helpfulVotes: 3,
+        votedBy: []
+      },
+      {
+        product: products1[2]._id, // Samsung 4K TV
+        order: orders[3]._id,
+        buyer: users[0]._id,
+        shop: shops[0]._id,
+        rating: 3,
+        comment: 'Hình ảnh đẹp nhưng TV hơi nặng và chân đế khó lắp đặt. Mong shop ghi chú rõ hơn.',
+        images: ['https://cdn.example.com/reviews/samsung-tv-review.jpg'],
+        isVerifiedPurchase: true,
+        helpfulVotes: 1,
+        votedBy: []
+      }
+    ];
+
+    await Review.create(reviewsData);
+    console.log('✅ Created 5 reviews');
+
     console.log('\n📊 Database Seeding Complete!');
     console.log('📝 Sample Data Summary:');
     console.log('   - Users: 3 (1 buyer, 2 sellers)');
@@ -416,6 +497,7 @@ const seedData = async () => {
     console.log('   - Products: 9');
     console.log('   - Coupons: 4');
     console.log('   - Orders: 4 (3 with coupons)');
+    console.log('   - Reviews: 5');
     console.log('\n🎫 Sample Coupons:');
     console.log('   - WELCOME10: 10% off (Electronics Paradise)');
     console.log('   - SAVE50: $50 off electronics (Electronics Paradise)');

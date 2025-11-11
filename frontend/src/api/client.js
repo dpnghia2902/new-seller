@@ -11,14 +11,14 @@ const api = axios.create({
 
 // Add token to requests
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
+    (config) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
 );
 
 // Auth API
@@ -67,6 +67,19 @@ export const couponAPI = {
   updateCoupon: (couponId, data) => api.put(`/coupons/${couponId}`, data),
   deleteCoupon: (couponId) => api.delete(`/coupons/${couponId}`),
   validateCoupon: (data) => api.post('/coupons/validate', data),
+};
+
+// Review API
+export const reviewAPI = {
+  createReview: (data) => api.post('/reviews', data),
+  getProductReviews: (productId, params) => api.get(`/reviews/product/${productId}`, { params }),
+  getShopReviews: (shopId, params) => api.get(`/reviews/shop/${shopId}`, { params }),
+  getBuyerReviews: () => api.get('/reviews/buyer/my-reviews'),
+  getSellerReviews: () => api.get('/reviews/seller/my-reviews'),
+  updateReview: (reviewId, data) => api.put(`/reviews/${reviewId}`, data),
+  deleteReview: (reviewId) => api.delete(`/reviews/${reviewId}`),
+  respondToReview: (reviewId, data) => api.post(`/reviews/${reviewId}/respond`, data),
+  voteReview: (reviewId) => api.post(`/reviews/${reviewId}/vote`),
 };
 
 export default api;

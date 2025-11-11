@@ -140,7 +140,31 @@ exports.createOrder = async (req, res) => {
       originalPrice: order.originalPrice,
       totalPrice: order.totalPrice
     });
+    // ===== SOCKET.IO: Emit new order notification to seller =====
+    try {
+      const io = req.app.get('io');
+      if (io && shop.owner) {
+        const notificationData = {
+          orderId: order._id,
+          orderNumber: `#${order._id.toString().slice(-6).toUpperCase()}`,
+          buyerName: req.user.fullName || req.user.username,
+          totalPrice: order.totalPrice,
+          itemsCount: order.items.length,
+          createdAt: order.createdAt,
+          items: order.items.map(item => ({
+            title: item.title,
+            quantity: item.quantity,
+            price: item.price
+          }))
+        };
 
+        console.log('📢 Emitting new order notification to seller:', shop.owner._id);
+        io.to(`seller:${shop.owner._id}`).emit('new:order', notificationData);
+      }
+    } catch (socketErr) {
+      console.error('Socket emission error:', socketErr);
+      // Don't fail the order creation if socket fails
+    }
     res.status(201).json({ message: 'Order created successfully', order });
   } catch (err) {
     console.error('Create order error:', err);
