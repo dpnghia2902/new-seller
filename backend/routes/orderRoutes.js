@@ -8,14 +8,15 @@ const {
   cancelOrder,
 } = require('../controllers/orderController');
 const { protect } = require('../middleware/auth');
+const { orderCreateLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
 // All routes require authentication
 router.use(protect);
 
-// Create order
-router.post('/', createOrder);
+// Create order with rate limiting
+router.post('/', orderCreateLimiter, createOrder);
 
 // Specific routes BEFORE wildcard routes
 // Get seller's orders (orders from their shop)

@@ -8,16 +8,17 @@ const {
   deleteProduct,
   getShopProducts,
 } = require('../controllers/productController');
-const { protect } = require('../middleware/auth');
+const { protect, checkVerified } = require('../middleware/auth');
+const { productCreateLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
-router.post('/create', protect, createProduct);
+router.post('/create', protect, checkVerified, productCreateLimiter, createProduct);
 router.get('/my-products', protect, getMyProducts);
 router.get('/all', getAllProducts);
 router.get('/shop/:shopId', getShopProducts);
 router.get('/:productId', getProduct);
-router.put('/:productId', protect, updateProduct);
-router.delete('/:productId', protect, deleteProduct);
+router.put('/:productId', protect, checkVerified, updateProduct);
+router.delete('/:productId', protect, checkVerified, deleteProduct);
 
 module.exports = router;
