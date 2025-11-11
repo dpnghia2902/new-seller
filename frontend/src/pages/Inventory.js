@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { productAPI } from '../api/client';
+import { productAPI, reviewAPI } from '../api/client';
 import AdminLayout from '../components/AdminLayout';
 import './Inventory.css';
 
@@ -17,6 +17,13 @@ const Inventory = () => {
   const [stockValue, setStockValue] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
+
+  //Popup State
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewProduct, setReviewProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewError, setReviewError] = useState('');
 
   const navigate = useNavigate();
   const { user, isUserSeller } = useAuth();
@@ -101,6 +108,35 @@ const Inventory = () => {
       setError(err.response?.data?.message || 'Failed to update stock');
     }
   };
+
+// Fetch reviews
+const fetchReviews = async (productId) => {
+  try {
+    setReviewLoading(true);
+    setReviewError('');
+    setReviews([]);
+
+    const res = await reviewAPI.getProductReviews(productId, { page: 1, limit: 10, sort: 'recent' });
+    const fetchedReviews = res.data.reviews || [];
+    console.log('Fetched reviews:', fetchedReviews); // kiểm tra API trả về
+
+    const product = products.find((p) => p._id === productId);
+    if (!product) {
+      setReviewError('Product not found');
+      return;
+    }
+
+    setReviewProduct(product);
+    setReviews(fetchedReviews);
+    setShowReviewModal(true);
+  } catch (err) {
+    console.error(err);
+    setReviewError(err.response?.data?.message || 'Failed to load reviews');
+  } finally {
+    setReviewLoading(false);
+  }
+};
+
 
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -204,6 +240,14 @@ const Inventory = () => {
                               title="Edit Stock"
                             >
                               Edit
+                            </button>
+
+                            <button
+                              onClick={() => fetchReviews(product._id)}
+                              className="btn-edit"
+                              title="View Reviews"
+                            >
+                              Reviews
                             </button>
                           </div>
                         </td>
@@ -342,6 +386,62 @@ const Inventory = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* show Review Modal */}
+        {showReviewModal && reviewProduct && (
+          <div className="modal-overlay" onClick={() => setShowReviewModal(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              {/* Modal Header */}
+              <div className="modal-header review-modal">
+                <p >Reviews for {reviewProduct.title}</p>
+                <button
+                  onClick={() => setShowReviewModal(false)}
+                  className="modal-close review-modal"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Modal Body: Product info */}
+              <div className="modal-body product-info-display">
+                <div className="product-image-large">
+                  <img
+                    src={reviewProduct.images?.[0] || 'https://via.placeholder.com/150'}
+                    alt={reviewProduct.title}
+                  />
+                </div>
+                <div className="product-details">
+                  <h3>{reviewProduct.title}</h3>
+                  <p className="product-category">{reviewProduct.category}</p>
+                  <p className="product-price">${reviewProduct.price.toFixed(2)}</p>
+                </div>
+              </div>
+
+              {/* Reviews */}
+              <div className="review-list-container">
+                {reviewLoading ? (
+                  <p>Loading reviews...</p>
+                ) : reviewError ? (
+                  <p className="error-message">{reviewError}</p>
+                ) : reviews.length === 0 ? (
+                <p className="no-reviews">No reviews yet.</p>
+                ) : (
+                  <div className="review-list">
+                    {reviews.map((review) => (
+                      <div key={review._id} className="review-item">
+                        <div className="review-buyer">
+                          <strong>{review.buyer?.username || review.buyer?.fullName || 'Anonymous'}</strong>
+                          <span>Rating: {review.rating} ⭐</span>
+                        </div>
+                        <p className="review-comment">{review.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
