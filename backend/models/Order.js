@@ -63,6 +63,10 @@ const OrderSchema = new mongoose.Schema(
       zipCode: String,
       country: String,
     },
+    trackingNumber: {
+      type: String,
+      default: null,
+    },
     notes: String,
   },
   { timestamps: true }

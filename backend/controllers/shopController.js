@@ -34,8 +34,11 @@ exports.createShop = async (req, res) => {
       location: location || null,
     });
 
-    // Update user with shop id
-    await User.findByIdAndUpdate(req.userId, { storeId: shop._id });
+    // Update user with shop id and set role to seller
+    await User.findByIdAndUpdate(req.userId, { 
+      storeId: shop._id,
+      role: 'seller'
+    });
 
     res.status(201).json({
       success: true,
